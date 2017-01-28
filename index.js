@@ -30,7 +30,10 @@ if (program.everything || program.e) {
     runCommand(commands.containers, true);
     runCommand(commands.images);
     runCommand(commands.volumes);
-    console.log("Everything purged");
+    console.log('Everything purged');
+}
+else {
+    console.log('Please enter a valid option. Use --help for more information');
 }
 
 function processInput(command) {
