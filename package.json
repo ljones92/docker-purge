@@ -1,0 +1,18 @@
+{
+  "name": "docker_clean",
+  "version": "1.0.0",
+  "description": "Delete all docker images, containers and volumes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Laurence Jones",
+  "license": "MIT",
+  "bin": {
+    "docker-purge": "./index.js"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "shelljs": "^0.7.6"
+  }
+}

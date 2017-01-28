@@ -1,0 +1,21 @@
+{
+	"containers": {
+        "command": "docker container prune --force",
+		"commandAll": "docker rm -v $(docker ps -aq)",
+		"success": "All stopped Docker containers purged",
+        "successAll": "All Docker containers purged",
+		"error": "There are no Docker containers to delete"
+	},
+	"images": {
+        "command": "docker image prune --all --force",
+		"success": "All unused Docker images purged, this will not have removed images that are in use. Use --all to remove all images",
+        "successAll": "All Docker images and associated containers purged",
+		"error": "There was a problem deleting your Docker images"
+	},
+	"volumes": {
+		"command": "docker volume prune --force",
+		"success": "All unused Docker volumes purged, this will not have removed volumes with associated containers. Use --all to remove all volumes, this will also delete all containers",
+        "successAll": "All Docker volumes and associated containers purged",
+		"error": "There are no Docker volumes to delete"
+	}
+}
