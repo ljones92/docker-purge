@@ -17,3 +17,9 @@ A simple command line tool for removing Docker containers, images and volumes
   - `-i, --images`: Delete all Docker images with no associated containers
   - `-v, --volumes`: Delete all Docker volumes with no associated containers
   - `-a, --all`: Append to other options to delete images, containers or volumes that are in use as well. When deleting images or volumes with this method, it will also result in all containers being deleted.
+
+  ## Examples
+  - `docker-purge -c`: This will delete all stopped containers.
+  - `docker-purge -i`: This will delete all images with no associated containers.
+  - `docker-purge -ia`: This will delete all images, including all images with associated containers. As a consequence, this will also delete all containers.
+  - `docker-purge -iva`: This will delete all containers, images and volumes. This is equivalent to `docker-purge -e`.
