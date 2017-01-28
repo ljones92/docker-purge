@@ -1,5 +1,5 @@
 # docker-purge
-A simple script for removing Docker containers, images and volumes
+A simple command line tool for removing Docker containers, images and volumes
 
 ## Installation
 - Clone the repository: `git clone https://github.com/ljones92/docker-purge.git`
