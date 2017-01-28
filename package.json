@@ -1,6 +1,6 @@
 {
   "name": "docker-purge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Delete all docker images, containers and volumes",
   "main": "index.js",
   "scripts": {
