@@ -1,11 +1,16 @@
 #!/usr/bin/env node
-var program = require('commander');
+const program = require('commander');
+const colors = require('colors');
 require('shelljs/global');
 
-var commands = require('./commands.json');
+const commands = require('./commands.json');
+
+const containerCount = grepInfo('Containers');
+const imageCount = grepInfo('Images');
+const runningCount = grepInfo('Running');
 
 program
-    .version('0.4.0')
+    .version('0.5.0')
     .option('-e, --everything', 'Purge all Docker containers, images and volumes; used or unused')
     .option('-i, --images', 'Purge all docker images with no associated containers')
     .option('-c, --containers', 'Purge all stopped Docker containers')
@@ -19,11 +24,47 @@ checkDockerVersion();
 checkValidInput();
 handleOptions();
 
+function checkDockerVersion() {
+    if(!which('docker')) {
+        console.error('In order to use this tool, you must have Docker installed. See https://docs.docker.com/engine/installation/.'.red.bold);
+        exit(1);
+    }
+    const dockerVersion = exec('docker --version', {silent:true}).stdout.split(',')[0];
+    const version = dockerVersion.split(' ').slice(-1).pop()
+    const versionSplit = version.split('.');
+    const versionShort = versionSplit[0] + '.' + versionSplit[1];
+    if (parseFloat(versionShort) < 1.13) {
+        console.error('You need Docker version 1.13.0 or above to use this tool.'.red.bold);
+        exit(1);
+    }
+}
+
+function checkValidInput() {
+    if (!(program.containers || program.images || program.volumes || program.prune || program.everything)) {
+        console.info('Please enter a valid option. Use --help for more information'.bold);
+        exit(1);
+    }
+}
+
 function handleOptions() {
     if (program.containers) {
+        if (containerCount === 0) {
+            console.error(commands.containers.noneFoundMsg.bold);
+            exit(1);
+        } else if (containerCount === runningCount && !(program.all || program.a)) {
+            console.error('All containers are running, append --all to force them to stop'.bold);
+            exit(1);
+        }
         handleAllFlag(commands.containers);
     }
-    if (program.images) {
+    if (program.images) {    
+        if (imageCount === 0) {
+            console.error(commands.images.noneFoundMsg.bold);
+            exit(1);
+        } else if (containerCount > 0 && containerCount === runningCount && !(program.all || program.a)) {
+            console.error('All images are in use, append --all to force all containers to stop first'.bold);
+            exit(1);
+        }
         handleAllFlag(commands.images);
     }
     if (program.volumes) {
@@ -31,58 +72,49 @@ function handleOptions() {
     }
     if (program.prune) {
         runCommand(commands.prune);
-        console.log(commands.prune.success);
+        console.info(commands.prune.success.green);
     }
     if (program.everything) {
-        runCommand(commands.containers, true);
-        runCommand(commands.images);
+        if (containerCount > 0) {
+            runCommand(commands.containers, true);
+        }
+        if (imageCount > 0) {
+            runCommand(commands.images);
+        }
         runCommand(commands.volumes);
-        console.log('Everything purged');
+        console.info('Everything purged'.green);
     }
+}
+
+function grepInfo(string) {
+    const grepOutput = exec(`docker info | grep ${string}`, {silent:true}).stdout.split(`${string}: `)[1];
+    const count = parseInt(grepOutput);
+    
+    return count;
 }
 
 function handleAllFlag(command) {
     if (program.a || program.all) {
-        runCommand(commands.containers, true);
+        if (containerCount > 0) {
+            runCommand(commands.containers, true);
+        }
         if (command !== commands.containers) {
             runCommand(command);
         }
-        console.log(command.successAll);
+        console.info(command.successAll.green);
     }
     else {
         runCommand(command);
-        console.log(command.success);
+        console.info(command.success.green);
     }
 }
 
 function runCommand(type, all = false) {
-    var silent = program.silent;
+    const silent = program.silent;
     if (all) {
-        exec(type.commandAll, {silent: silent});
+        exec(type.commandAll, {silent});
     }
     else {
-        exec(type.command, {silent: silent});
-    }
-}
-
-function checkDockerVersion() {
-    if(!which('docker')) {
-        console.log('In order to use this tool, you must have Docker installed. See https://docs.docker.com/engine/installation/.');
-        exit(1);
-    }
-    var dockerVersion = exec('docker --version', {silent:true}).stdout.split(',')[0];
-    var version = dockerVersion.split(' ').slice(-1).pop()
-    var versionSplit = version.split('.');
-    var versionShort = versionSplit[0] + '.' + versionSplit[1];
-    if (parseFloat(versionShort) < 1.13) {
-        console.log('You need Docker version 1.13.0 or above to use this tool.');
-        exit(1);
-    }
-}
-
-function checkValidInput() {
-    if (!(program.containers || program.images || program.volumes || program.prune || program.everything)) {
-        console.log('Please enter a valid option. Use --help for more information');
-        exit(1);
+        exec(type.command, {silent});
     }
 }

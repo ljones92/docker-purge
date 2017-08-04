@@ -1,19 +1,22 @@
 {
 	"containers": {
         "command": "docker container prune --force",
-		"commandAll": "docker rm -v $(docker ps -aq)",
+		"commandAll": "docker stop $(docker ps -a -q);docker rm -v $(docker ps -aq)",
 		"success": "All stopped Docker containers purged",
-        "successAll": "All Docker containers purged"
+        "successAll": "All Docker containers purged",
+		"noneFoundMsg": "There are no containers to purge"
 	},
 	"images": {
         "command": "docker image prune --all --force",
 		"success": "All unused Docker images purged, this will not have removed images that are in use. Use --all to remove all images",
-        "successAll": "All Docker images and associated containers purged"
+        "successAll": "All Docker images and associated containers purged",
+		"noneFoundMsg": "There are no images to purge"
 	},
 	"volumes": {
 		"command": "docker volume prune --force",
 		"success": "All unused Docker volumes purged, this will not have removed volumes with associated containers. Use --all to remove all volumes, this will also delete all containers",
-        "successAll": "All Docker volumes and associated containers purged"
+        "successAll": "All Docker volumes and associated containers purged",
+		"noneFoundMsg": "There are no volumes to purge"
 	},
 	"prune": {
 		"command": "docker system prune --all --force",
