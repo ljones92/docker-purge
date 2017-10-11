@@ -1,5 +1,5 @@
 # docker-purge
-A simple command line tool for removing Docker containers, images and volumes
+A simple CLI tool for removing Docker containers, images and volumes
 
 ## Installation
 - To install the command line tool: `npm install -g docker-purge`
